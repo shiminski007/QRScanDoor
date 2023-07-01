@@ -5,15 +5,16 @@
   <title>QR Screen</title>
   <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
       font-family: Arial, sans-serif;
     }
 
     .container {
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
     }
 
     .qr-code {
@@ -23,17 +24,27 @@
     .timer {
       font-size: 24px;
     }
+
+    .welcome-user {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
   </style>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
 <body>
   <div class="container">
-    <div id="welcome-user" class="welcome-user"></div>
+    <div class="welcome-user"></div>
     <div id="qr-code" class="qr-code"></div>
     <p id="timer" class="timer"></p>
   </div>
 
-
+  <!-- Add Bootstrap JS and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
@@ -57,7 +68,7 @@
     var countdown = 180; // 3 minutes in seconds
     var dbRef = firebase.database().ref('user');
     dbRef.child(userName).get().then(function (snapshot) {
-      document.getElementById("welcome-user").textContent = "Hello! " + snapshot.val().name;
+      document.querySelector(".welcome-user").textContent = "Hello! " + snapshot.val().name;
       var qrCode = new QRCode(document.getElementById("qr-code"), {
         text: snapshot.val().lastCall,
         width: 128,
@@ -67,19 +78,16 @@
       function startCountdown() {
         var timer = setInterval(function () {
           countdown--;
-          timerElement.textContent = "Please scan at entrace gate in " + countdown + " seconds.";
+          timerElement.textContent = "Please scan at entrance gate in " + countdown + " seconds.";
 
           if (countdown === 0) {
             clearInterval(timer);
-            alert("time out!!! Please log in again.")
+            alert("Time out! Please log in again.");
             window.location.href = "index.html";
-          }
-          else if (!snapshot.val().DriveOut && countdown === 179) {
+          } else if (!snapshot.val().DriveOut && countdown === 179) {
             timerElement.textContent = "Please scan at exit gate when you leave.";
             clearInterval(timer);
-            alert(countdown)
-          }
-          else if (!snapshot.val().DriveOut && countdown !== 179) {
+          } else if (!snapshot.val().DriveOut && countdown !== 179) {
             location.reload();
           }
         }, 1000);
