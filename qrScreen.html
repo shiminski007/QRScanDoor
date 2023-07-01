@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>QR Screen</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .qr-code {
+      margin-bottom: 20px;
+    }
+
+    .timer {
+      font-size: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="welcome-user" class="welcome-user"></div>
+    <div id="qr-code" class="qr-code"></div>
+    <p id="timer" class="timer"></p>
+  </div>
+
+
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+  <script>
+    // Your Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyD775YdZ97WfFZT9RtB71YDW9IEUiVRB8I",
+      authDomain: "magneticdoor-ab2fd.firebaseapp.com",
+      databaseURL: "https://magneticdoor-ab2fd-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "magneticdoor-ab2fd",
+      storageBucket: "magneticdoor-ab2fd.appspot.com",
+      messagingSenderId: "559693294873",
+      appId: "1:559693294873:web:624c1da7129f7b5aeea988",
+      measurementId: "G-1QWETB2F46"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    var userName = getUrlParameter("userName");
+    var timerElement = document.getElementById("timer");
+    var countdown = 180; // 3 minutes in seconds
+    var dbRef = firebase.database().ref('user');
+    dbRef.child(userName).get().then(function (snapshot) {
+      document.getElementById("welcome-user").textContent = "Hello! " + snapshot.val().name;
+      var qrCode = new QRCode(document.getElementById("qr-code"), {
+        text: snapshot.val().lastCall,
+        width: 128,
+        height: 128
+      });
+
+      function startCountdown() {
+        var timer = setInterval(function () {
+          countdown--;
+          timerElement.textContent = "Please scan at entrace gate in " + countdown + " seconds.";
+
+          if (countdown === 0) {
+            clearInterval(timer);
+            alert("time out!!! Please log in again.")
+            window.location.href = "index.html";
+          }
+          else if (!snapshot.val().DriveOut && countdown === 179) {
+            timerElement.textContent = "Please scan at exit gate when you leave.";
+            clearInterval(timer);
+            alert(countdown)
+          }
+          else if (!snapshot.val().DriveOut && countdown !== 179) {
+            location.reload();
+          }
+        }, 1000);
+      }
+      startCountdown();
+    })
+
+    // Function to retrieve query parameters from URL
+    function getUrlParameter(name) {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      var results = regex.exec(location.search);
+      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+  </script>
+</body>
+
+</html>

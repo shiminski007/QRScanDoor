@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login Screen</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 300px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Login Screen</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+        <p id="error-message" class="error-message"></p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        // Your Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyD775YdZ97WfFZT9RtB71YDW9IEUiVRB8I",
+            authDomain: "magneticdoor-ab2fd.firebaseapp.com",
+            databaseURL: "https://magneticdoor-ab2fd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "magneticdoor-ab2fd",
+            storageBucket: "magneticdoor-ab2fd.appspot.com",
+            messagingSenderId: "559693294873",
+            appId: "1:559693294873:web:624c1da7129f7b5aeea988",
+            measurementId: "G-1QWETB2F46"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        function handleLogin() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var dbRef = firebase.database().ref('user');
+
+            dbRef.child(username).get().then(function (snapshot) {
+                if (snapshot.exists() && snapshot.val().password === password) {
+                    // Redirect to QR Screen
+                    window.location.href = "qrScreen.html?userName=" + username;
+                } else {
+                    document.getElementById("error-message").textContent = "Invalid credentials";
+                }
+            }).catch(function (error) {
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+
+</html>
