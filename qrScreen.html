@@ -71,8 +71,8 @@
       document.querySelector(".welcome-user").textContent = "Hello! " + snapshot.val().name;
       var qrCode = new QRCode(document.getElementById("qr-code"), {
         text: snapshot.val().lastCall.toString(),
-        width: 128,
-        height: 128
+        width: 512,
+        height: 512
       });
 
       function startCountdown() {
