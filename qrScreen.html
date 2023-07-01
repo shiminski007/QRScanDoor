@@ -70,7 +70,7 @@
     dbRef.child(userName).get().then(function (snapshot) {
       document.querySelector(".welcome-user").textContent = "Hello! " + snapshot.val().name;
       var qrCode = new QRCode(document.getElementById("qr-code"), {
-        text: snapshot.val().lastCall,
+        text: parseInt(snapshot.val().lastCall),
         width: 128,
         height: 128
       });
